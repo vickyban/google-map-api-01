@@ -1,0 +1,146 @@
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <script type="text/javascript" src="https://maps.googleapis.com/maps/api/js?key=AIzaSyBHxwuIzt3B_3v1WrN4wuhl2QnAnrSc6aE&libraries=places"></script>
+    <style>
+        #map, #pane{
+            width:50%;
+            height:50%;
+        }
+        #pane{
+            overflow: scroll; 
+        }
+        
+    </style>
+    <title>Document</title>
+</head>
+<body>
+    <h1>Location</h1>
+    <form>
+        <input type="text" id="from_place" placeholder="Enter Origin">
+        <input type="hidden" id="origin" name="location" required>
+
+        <input type="text" id="to_place" placeholder="Enter Destination">
+        <input type="hidden" id="destination" name="location" required>
+        
+        <input type="submit" value="Find">
+        
+    </form>
+    <!-- <button id="find">Find</button> -->
+    <div id="map"></div>
+    <div id="panel"></div>
+
+    <script>
+        // let squareone = new google.maps.LatLng(43.5927,-79.6427);
+        // let sheridanc = new google.maps.LatLng(43.5911,-79.6468);
+        //let directionsDisplay = new google.maps.DirectionsRenderer();
+        let directionsService = new google.maps.DirectionsService();
+        // Autocomplete input field
+        let autocomplete_from_place = new google.maps.places.Autocomplete(document.getElementById("from_place"));
+        let autocomplete_to_place = new google.maps.places.Autocomplete(document.getElementById("to_place"));
+        // Listen for locations input
+        google.maps.event.addListener(autocomplete_from_place,'place_changed', function(){
+            let place = autocomplete_from_place.getPlace();
+            let place_address = place.formatted_address;
+            document.getElementById("origin").value = place_address;
+        })
+        google.maps.event.addListener(autocomplete_to_place,'place_changed', function(){
+            let place = autocomplete_to_place.getPlace();
+            let place_address = place.formatted_address;
+            document.getElementById("destination").value = place_address;
+        })
+        // Map
+        let map;
+        let mississauga = new google.maps.LatLng(43.5890,-79.6441);
+        let mapOptions = {
+            center: mississauga,
+            zoom:14
+        };
+        map =  new google.maps.Map(document.getElementById("map"), mapOptions);
+        // map bind directionsDisplay 
+        //directionsDisplay.setMap(map);
+        //directionsDisplay.setPanel(document.getElementById("pane"));
+
+        // Listen for inputs and render the result on map
+        document.forms[0].addEventListener("submit", function(e){
+            e.preventDefault();
+
+            let origin = document.getElementById("origin").value;
+            let destination = document.getElementById("destination").value;
+
+            calculateRoute(origin,destination);
+        })
+        
+
+         let polyArray = [];
+         let directionsDisplay = new google.maps.DirectionsRenderer({map: map, panel: document.getElementById("panel")});
+        // render route
+        function calculateRoute(origin, destination){
+            let directionsRequest = {
+                origin: origin,
+                destination:destination,
+                travelMode: "DRIVING",
+                provideRouteAlternatives: true,
+            };
+            directionsService.route(directionsRequest,function(result,status){
+                if(status == "OK"){
+                    // directionsDisplay.setDirections(result);
+
+                    // display all alternative routes
+                    // result.routes.forEach((route, index) => {
+                    //     new google.maps.DirectionsRenderer({
+                    //         directions:result,
+                    //         map:map,
+                    //         routeIndex: index,
+                    //     })
+                    // })
+                        
+                    // clear polyArray 
+                        polyArray.forEach(polyline => polyline.setMap(null));
+                        polyArray.length = 0;
+                     // attempt to use DisplayRenderer and Polyline
+                         directionsDisplay.setDirections(result);
+                    // // Display customeize routes and addListener for the routes
+                        result.routes.forEach((route, index) => {
+                            let polylineOption = {
+                                map:map,
+                                path: route.overview_path,
+                                strokeColor: '#696969',
+                                strokeOpacity: 0.4,
+                            }
+                            let pathPolyline = new google.maps.Polyline(polylineOption);
+                            polyArray.push(pathPolyline);
+                        // Event listener
+                            google.maps.event.addListener(pathPolyline, 'click', function(){
+                                let index = polyArray.indexOf(pathPolyline);
+                                // pathPolyline.setOptions({strokeColor: '#0000CC'});
+                                directionsDisplay.setRouteIndex(index);
+                                polyArray.forEach(polyline => polyline.setMap(map));
+                                pathPolyline.setMap(null);
+        
+                            } );
+                    //         routeInfo = {
+                    //             routeindex: index,
+                    //             route:route,
+                    //             polyline: pathPolyline
+                    //         }
+                    //         polyArray.push(routeInfo)       
+                        });
+                    //     console.log(polyArray.length);
+
+
+
+                }
+            });
+        }
+  
+        // document.getElementById("find").onclick= function(){
+        //     calculateRoute();
+        // }
+
+    </script>
+   
+</body>
+</html>

@@ -1,0 +1,61 @@
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>Document</title>
+    <style>
+        #map{
+            height: 50%;
+        }
+        input{
+            width: 50%;
+        }
+    </style>
+</head>
+<body>
+    <form>
+        <div>
+            <input type="text" id="from_place" placeholder="Start address"> <!--Search for value-->
+            <input id="origin" type="hidden" name="origin" required/> <!--value get submit-->
+        </div>
+        <div>
+            <input type="text" id="to_place" placeholder="End address">
+            <input id="destination" type="hidden" name="destination" required/>
+        </div>
+        <input type="submit" value="Find">
+    </form>
+    <h1>THe MAP</h1>
+    <div id="map"></div>
+
+    
+    <!-- <script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyBHxwuIzt3B_3v1WrN4wuhl2QnAnrSc6aE&callback=initMap"async defer></script> -->
+    <!-- <script type="text/javascript" src="app3.js"></script> -->
+    <script>
+        function activatePlacesSearch(){
+            let autocomplete_from_place = new google.maps.places.Autocomplete(document.getElementById("from_place"));
+            let autocomplete_to_place = new google.maps.places.Autocomplete(document.getElementById("to_place"));
+
+            google.maps.event.addListener(autocomplete_from_place, 'place_changed', function(){
+                let from_place = autocomplete_from_place.getPlace();
+                let from_address = from_place.formatted_address;
+                document.getElementById("origin").value = from_address;
+            })
+            google.maps.event.addListener(autocomplete_to_place, 'place_changed', function(){
+                let to_place = autocomplete_to_place.getPlace();
+                let to_address = to_place.formatted_address;
+                document.getElementById("destination").value = to_address;
+            })
+            // let input = document.getElementById("from_place");
+            // let searchBox = new google.maps.places.SearchBox(input);
+
+            // searchBox.addListener('places_changed', function(){
+            //     let places = searchBox.getPlaces();
+            //     console.log(places);
+            // })
+        }
+    </script>
+        <!--Google Place API library-->
+        <script type="text/javascript" src="https://maps.googleapis.com/maps/api/js?key=AIzaSyBHxwuIzt3B_3v1WrN4wuhl2QnAnrSc6aE&libraries=places&callback=activatePlacesSearch"></script>
+</body>
+</html>

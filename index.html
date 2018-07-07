@@ -1,0 +1,82 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>Simple Map</title>
+    <meta name="viewport" content="initial-scale=1.0">
+    <meta charset="utf-8">
+    <style>
+      /* Always set the map height explicitly to define the size of the div
+       * element that contains the map. */
+      #map {
+        height: 50%;
+      }
+      /* Optional: Makes the sample page fill the window. */
+      html, body {
+        height: 100%;
+        margin: 0;
+        padding: 0;
+      }
+    </style>
+  </head>
+  <body>
+      <h1>My google Map</h1>
+    <div id="map"></div>
+    <script>
+      var map;
+      function initMap() {
+         // New Map
+        map = new google.maps.Map(document.getElementById('map'), {
+          center: {lat: 43.5890, lng: -79.6441},
+          zoom: 8
+        });
+        // Listen for click on map
+        google.maps.event.addListener(map, 'click', function(e){
+            // Add marker
+            addMarker({coords:e.latLng});
+        });
+        /* // Add marker
+        let marker = new google.maps.Marker(
+            {
+                position: {lat:43.5927, lng: -79.6427}, 
+                map: map,
+                icon: './instagram-new.png',
+            });
+        // infor window
+        let infoWindow = new google.maps.InfoWindow({
+            content:'<h1>Hello Poyo</h1>'
+        });
+        marker.addListener('click', function() {
+            infoWindow.open(map, marker);
+        }) */ 
+        addMarker({
+            coords:{lat:43.5927, lng: -79.6427},
+            content: '<h2>Hello boi</h2>'
+            });
+
+        //Add Marker Function
+        function addMarker(props){
+            var marker = new google.maps.Marker({
+                position: props.coords,
+                map:map,
+            });
+            if(props.icon){
+                marker.setIcon(props.icon);
+            }
+            if(props.content){
+                var infoWindow = new google.maps.InfoWindow({
+                    content: props.content
+                });
+                marker.addListener('click', function() {
+                    infoWindow.open(map,marker)
+                    });
+
+            }
+
+        }
+
+      }
+    </script>
+    <script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyBHxwuIzt3B_3v1WrN4wuhl2QnAnrSc6aE&callback=initMap"
+    async defer></script>
+  </body>
+</html>

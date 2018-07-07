@@ -1,0 +1,82 @@
+const API_KEY = 'AIzaSyBHxwuIzt3B_3v1WrN4wuhl2QnAnrSc6aE';
+
+1. Load Google MAP API 
+<script type="text/javascript" src="https://maps.googleapis.com/maps/api/js?key=YOUR-API-KEY&libraries=places"></script>
+    Add this script in the <head> 
+    or <body> but need to at callback=callbackfunction to the URL
+    https://maps.googleapis.com/maps/api/js?key=YOUR-API-KEY&libraries=places&callback=callbackfunction
+        The callbackfunction will contain code for google map
+
+2. Add Autocomplete feature for input field (google.maps.places API)
+    create instance of Autocomplete class and attach it to an input_field
+        let autocomplete = new google.maps.places.Autocomplete( input_obj [, opt] );
+
+    get result obj
+        google.maps.event.addListener(autocomplete, 'place_changed', function(){
+            let place = autocomplete.getPlace();
+        } )
+
+3. Create LatLng object
+    let squareone = new google.maps.LatLng(43.5927,-79.6427);
+
+4. Directions Request (Maps JavaScript API)
+    create instance of DirectionsService class
+        let directionsService = new google.maps.DirectionsService();
+    create DirectionsRequest object 
+        let request = {
+            origin: LatLng | String | google.maps.Place,
+            destination: LatLng | String | google.maps.Place,
+            travelMode: TravelMode,
+            transitOptions: TransitOptions,
+            drivingOptions: DrivingOptions,
+            unitSystem: UnitSystem,
+            waypoints[]: DirectionsWaypoint,
+            optimizeWaypoints: Boolean,
+            provideRouteAlternatives: Boolean,
+            avoidFerries: Boolean,
+            avoidHighways: Boolean,
+            avoidTolls: Boolean,
+            region: String
+        }
+    
+    get route/direction
+        directionsService.route(request, callback(result, status))
+
+5. Display DirectionsResult 
+    create an instance of DirectionsRenderer class
+        let directionsDisplay = new google.maps.DirectionsRenderer();
+    bind it to a map
+        directionsDisplay.setMap(map)
+    Render the DirectionsResult 
+        directionsService.route(request, function(result, status){
+            if(status == 'OK')
+                directionsDisplay.setDirections(result);
+        } )
+
+6. Display textual directions steps into a <div>
+    directionsDisplay.setPanel(div_panel)
+
+7. DirectionsResult object
+    -return by directionsService.route()
+    - contains {
+        geocode_waypoints: Array of DirectionsGeocodedWaypoint
+        routes: Array of DrectionsRoute (can have more than one route if request's provideRouteAlternatives: true)
+    }
+
+8. DirectionsRenderer( [opts] )
+    src: https://github.com/amenadiel/google-maps-documentation/blob/master/docs/DirectionsRendererOptions.md
+    a. DirectionsRendererOptions interface
+        {
+            directions: DirectionsResult
+            draggable: bool  (allow user to drag and modify the paths of riutes )
+            hideRouteList: bool (whether the renderer should provide UI to select amongst alter routes)
+            infoWindow: InfoWindow  
+            map: map
+            panel: Node (<div> to display directions steps)
+            routeIndex: int (index of route within DirectionsResult)
+            etc ...
+        }
+    b. Display alternative routes
+        - create new displayRenderer for each alter route
+        - loop through all the routes in the DirectionsResult.routes
+
